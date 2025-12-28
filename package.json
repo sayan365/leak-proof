@@ -1,0 +1,35 @@
+{
+  "name": "leak-proof",
+  "version": "1.0.0",
+  "description": "A viral Git pre-commit hook to prevent secret leaks",
+  "main": "bin/index.js",
+  "bin": {
+    "leak-proof": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "git",
+    "hooks",
+    "security",
+    "pre-commit",
+    "secrets",
+    "leak-prevention",
+    "husky"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "husky": "^8.0.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sayan365/leak-proof.git"
+  }
+}
