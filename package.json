@@ -16,9 +16,16 @@
     "pre-commit",
     "secrets",
     "leak-prevention",
-    "husky"
+    "husky",
+    "env",
+    "api-key",
+    "credential-scanner",
+    "secret-detection",
+    "git-hooks",
+    "devops",
+    "devsecops"
   ],
-  "author": "",
+  "author": "Sayan \u003chttps://github.com/sayan365\u003e",
   "license": "MIT",
   "dependencies": {
     "commander": "^11.1.0",
@@ -31,5 +38,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/sayan365/leak-proof.git"
+  },
+  "homepage": "https://github.com/sayan365/leak-proof#readme",
+  "bugs": {
+    "url": "https://github.com/sayan365/leak-proof/issues"
   }
 }

@@ -46,7 +46,7 @@ program
       }
 
       // Create pre-commit hook content (modern Husky v9+ syntax - no deprecated lines)
-            const preCommitContent = `npx leak-proof scan
+      const preCommitContent = `npx leak-proof scan
 `;
 
       fs.writeFileSync(preCommitPath, preCommitContent, 'utf8');
