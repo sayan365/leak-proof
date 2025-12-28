@@ -4,7 +4,7 @@
   "description": "A viral Git pre-commit hook to prevent secret leaks",
   "main": "bin/index.js",
   "bin": {
-    "leak-proof": "./bin/index.js"
+    "leak-proof": "bin/index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,7 +25,7 @@
     "devops",
     "devsecops"
   ],
-  "author": "Sayan \u003chttps://github.com/sayan365\u003e",
+  "author": "Sayan Das <https://github.com/sayan365>",
   "license": "MIT",
   "dependencies": {
     "commander": "^11.1.0",
@@ -37,7 +37,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sayan365/leak-proof.git"
+    "url": "git+https://github.com/sayan365/leak-proof.git"
   },
   "homepage": "https://github.com/sayan365/leak-proof#readme",
   "bugs": {
