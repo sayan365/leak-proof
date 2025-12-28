@@ -45,8 +45,9 @@ program
         fs.mkdirSync(huskyDir, { recursive: true });
       }
 
-      // Create pre-commit hook content (modern Husky v9+ syntax - no deprecated lines)
-      const preCommitContent = `npx leak-proof scan
+      // Create pre-commit hook content (cross-platform compatible)
+      const preCommitContent = `#!/bin/sh
+npx leak-proof scan
 `;
 
       fs.writeFileSync(preCommitPath, preCommitContent, 'utf8');
@@ -311,7 +312,7 @@ program
 program
   .name('leak-proof')
   .description('Leak-Proof is a zero-config CLI that blocks you from committing .env files or hardcoded secrets.')
-  .version('1.0.0');
+  .version('1.0.1');
 
 program.parse(process.argv);
 

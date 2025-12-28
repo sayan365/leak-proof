@@ -1,6 +1,6 @@
 {
   "name": "leak-proof",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A viral Git pre-commit hook to prevent secret leaks",
   "main": "bin/index.js",
   "bin": {
