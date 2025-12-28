@@ -1,7 +1,7 @@
 # leak-proof 🛡️
 
 [![npm version](https://img.shields.io/npm/v/leak-proof.svg?style=flat-square)](https://www.npmjs.com/package/leak-proof)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/sayan365/leak-proof/blob/main/LICENSE)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/sayan365/leak-proof/graphs/commit-activity)
 
 > **Stop accidental secret leaks before they leave your laptop.**
