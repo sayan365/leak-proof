@@ -45,11 +45,8 @@ program
         fs.mkdirSync(huskyDir, { recursive: true });
       }
 
-      // Create pre-commit hook content
-      const preCommitContent = `#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-npx leak-proof scan
+      // Create pre-commit hook content (modern Husky v9+ syntax - no deprecated lines)
+            const preCommitContent = `npx leak-proof scan
 `;
 
       fs.writeFileSync(preCommitPath, preCommitContent, 'utf8');
