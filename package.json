@@ -28,8 +28,8 @@
   "author": "Sayan Das <https://github.com/sayan365>",
   "license": "MIT",
   "dependencies": {
-    "commander": "^11.1.0",
     "chalk": "^4.1.2",
+    "commander": "^11.1.0",
     "husky": "^8.0.3"
   },
   "engines": {
