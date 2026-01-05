@@ -23,7 +23,6 @@
 npm install leak-proof@latest --save-dev
 ```
 
-**Details:** See [SECURITY-FIXES.md](./SECURITY-FIXES.md) for complete technical analysis and test cases.
 
 ---
 
