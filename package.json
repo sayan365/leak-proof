@@ -1,7 +1,7 @@
 {
   "name": "leak-proof",
-  "version": "1.0.1",
-  "description": "A viral Git pre-commit hook to prevent secret leaks",
+  "version": "1.1.0",
+  "description": "Zero-config Git pre-commit hook that blocks secrets (AWS keys, API tokens, .env files) from being committed. Auto-installs for your entire team.",
   "main": "bin/index.js",
   "bin": {
     "leak-proof": "bin/index.js"

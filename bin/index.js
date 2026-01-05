@@ -103,14 +103,33 @@ program
     }
 
     try {
-      // Get staged files
-      const stagedFiles = execSync('git diff --cached --name-only', { encoding: 'utf8' })
+      // Get staged files with their status (to detect renames/deletes)
+      const stagedFilesOutput = execSync('git diff --cached --name-status', { encoding: 'utf8' })
         .trim()
         .split('\n')
-        .filter(file => file.length > 0);
+        .filter(line => line.length > 0);
+
+      if (stagedFilesOutput.length === 0) {
+        console.log(chalk.gray('No staged files to scan.'));
+        return;
+      }
+
+      // Parse staged files and filter out deleted files
+      const stagedFiles = [];
+      for (const line of stagedFilesOutput) {
+        const [status, ...pathParts] = line.split('\t');
+        const filePath = pathParts[0];
+
+        // Skip deleted files (D) - they can't leak new secrets
+        if (status.startsWith('D')) {
+          continue;
+        }
+
+        stagedFiles.push(filePath);
+      }
 
       if (stagedFiles.length === 0) {
-        console.log(chalk.gray('No staged files to scan.'));
+        console.log(chalk.gray('No files to scan (only deletions staged).'));
         return;
       }
 
@@ -159,7 +178,11 @@ program
 
       // Files to skip
       const skipFiles = ['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'];
-      const binaryExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.pdf', '.zip', '.tar', '.gz', '.exe', '.bin'];
+      const binaryExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.pdf', '.zip', '.tar', '.gz', '.exe', '.bin', '.so', '.dylib', '.dll'];
+
+      // SECURITY & STABILITY FIX: Max file size to scan (1MB)
+      // Files larger than this are likely binaries or generated files
+      const MAX_FILE_SIZE = 1024 * 1024; // 1MB in bytes
 
       for (const file of stagedFiles) {
         // Skip if file is in skip list
@@ -167,44 +190,70 @@ program
           continue;
         }
 
-        // Skip binary files
+        // Skip binary files by extension
         const ext = path.extname(file).toLowerCase();
         if (binaryExtensions.includes(ext)) {
           continue;
         }
 
-        // Check if file exists (skip deleted files)
-        if (!fs.existsSync(file)) {
-          continue;
-        }
-
-        // Check if it's a file (not directory)
-        const stats = fs.statSync(file);
-        if (!stats.isFile()) {
-          continue;
-        }
-
-        // Read and scan file content
+        // CRITICAL FIX: Check file size in staging area BEFORE reading
+        // This prevents memory crashes on large files
+        let fileSize = 0;
         try {
-          const content = fs.readFileSync(file, 'utf8');
-          const lines = content.split('\n');
+          const sizeOutput = execSync(`git cat-file -s :${file}`, {
+            encoding: 'utf8',
+            stdio: ['pipe', 'pipe', 'pipe'] // Suppress stderr
+          }).trim();
+          fileSize = parseInt(sizeOutput, 10);
+        } catch (error) {
+          // File doesn't exist in staging (likely deleted or binary)
+          // git cat-file fails on deleted files
+          continue;
+        }
 
-          lines.forEach((line, index) => {
-            secretPatterns.forEach(({ name, pattern }) => {
-              if (pattern.test(line)) {
-                violations.push({
-                  file,
-                  line: index + 1,
-                  reason: `Detected ${name}`,
-                  snippet: line.trim().substring(0, 80) // First 80 chars
-                });
-              }
-            });
+        // Skip files larger than 1MB to avoid memory crashes
+        if (fileSize > MAX_FILE_SIZE) {
+          console.log(chalk.yellow(`⚠️  Skipping ${file} (${(fileSize / 1024 / 1024).toFixed(2)}MB - too large)`));
+          continue;
+        }
+
+        // CRITICAL FIX: Read file content from STAGING AREA, not disk
+        // This prevents the attack where users stage secrets then remove them from disk
+        let content;
+        try {
+          content = execSync(`git show :${file}`, {
+            encoding: 'utf8',
+            maxBuffer: MAX_FILE_SIZE,
+            stdio: ['pipe', 'pipe', 'pipe'] // Suppress stderr
           });
         } catch (error) {
-          // Skip files that can't be read as text
+          // File might be binary or unreadable
+          // git show fails on binary files with non-zero exit
           continue;
         }
+
+        // Additional binary detection: check for null bytes
+        if (content.includes('\0')) {
+          continue; // Binary file
+        }
+
+        // Scan file content line by line
+        const lines = content.split('\n');
+        lines.forEach((line, index) => {
+          secretPatterns.forEach(({ name, pattern }) => {
+            // Reset regex state (important for global regexes)
+            pattern.lastIndex = 0;
+
+            if (pattern.test(line)) {
+              violations.push({
+                file,
+                line: index + 1,
+                reason: `Detected ${name}`,
+                snippet: line.trim().substring(0, 80) // First 80 chars
+              });
+            }
+          });
+        });
       }
 
       // If violations found, block commit
@@ -251,8 +300,6 @@ program
 
         process.exit(1);
       }
-
-
 
       console.log(chalk.green('✓ No secrets detected. Commit allowed.'));
     } catch (error) {
@@ -312,7 +359,7 @@ program
 program
   .name('leak-proof')
   .description('Leak-Proof is a zero-config CLI that blocks you from committing .env files or hardcoded secrets.')
-  .version('1.0.1');
+  .version('1.1.0');
 
 program.parse(process.argv);
 
