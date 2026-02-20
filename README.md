@@ -10,22 +10,6 @@
 
 ---
 
-## 🚨 Security Notice
-
-**⚠️ CRITICAL UPDATE (v1.1.0):** If you are using v1.0.x, **upgrade immediately**.
-
-**What was fixed:**
-- **[CRITICAL]** Staging area bypass vulnerability - secrets in Git's index could be bypassed by modifying the working directory
-- **[HIGH]** Memory crash on large files (500MB+ SQL dumps, binaries)
-
-**How to upgrade:**
-```bash
-npm install leak-proof@latest --save-dev
-```
-
-
----
-
 
 ## ✨ Features
 
